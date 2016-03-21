@@ -6,6 +6,7 @@ WORKSPACE=$(pwd)
 PUP_DIR=${WORKSPACE}/.pup
 PUP_PACKAGES_DIR="${PUP_DIR}/packages"
 PUP_BIN_DIR="${PUP_DIR}/bin"
+PUP_CACHE="${HOME}/.pup_cache"
 
 _create_dir_unless_exists() {
   local dir=$1
@@ -16,13 +17,18 @@ _create_dir_unless_exists() {
 }
 
 _setup() {
+  _create_dir_unless_exists "${PUP_CACHE}"
   _create_dir_unless_exists "${PUP_DIR}"
   _create_dir_unless_exists "${PUP_PACKAGES_DIR}"
   _create_dir_unless_exists "${PUP_BIN_DIR}"
 }
 
 install() {
-  "${PIP_COMMAND}" install --target="${PUP_PACKAGES_DIR}" --no-binary :all: --install-option="--install-scripts=${PUP_BIN_DIR}" "${@}"
+  "${PIP_COMMAND}" install \
+    --target="${PUP_PACKAGES_DIR}" \
+    --no-binary :all: \
+    --cache-dir ${PUP_CACHE} \
+    --install-option="--install-scripts=${PUP_BIN_DIR}" "${@}"
 }
 
 exec() {
