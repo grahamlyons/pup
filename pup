@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PIP_COMMAND=$(which pip3 || which pip)
-PYTHON_COMMAND=$(which python3 || which pip)
+PYTHON_COMMAND=$(which python3 || which python)
 WORKSPACE=$(pwd)
 PUP_DIR=${WORKSPACE}/.pup
 PUP_PACKAGES_DIR="${PUP_DIR}/packages"
