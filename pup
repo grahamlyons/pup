@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+PIP_COMMAND=$(which pip3 || which pip)
+PYTHON_COMMAND=$(which python3 || which pip)
+WORKSPACE=$(pwd)
+PUP_DIR=${WORKSPACE}/.pup
+PUP_PACKAGES_DIR="${PUP_DIR}/packages"
+PUP_BIN_DIR="${PUP_DIR}/bin"
+
+_create_dir_unless_exists() {
+  local dir=$1
+  if [ ! -d ${dir} ]
+  then
+    mkdir -p ${dir}
+  fi
+}
+
+_setup() {
+  _create_dir_unless_exists "${PUP_DIR}"
+  _create_dir_unless_exists "${PUP_PACKAGES_DIR}"
+  _create_dir_unless_exists "${PUP_BIN_DIR}"
+}
+
+install() {
+  "${PIP_COMMAND}" install --target="${PUP_PACKAGES_DIR}" --no-binary :all: --install-option="--install-scripts=${PUP_BIN_DIR}" "${@}"
+}
+
+exec() {
+  local command=$1
+  shift
+  PYTHONPATH=${PUP_PACKAGES_DIR} "${PUP_BIN_DIR}/${command}" "${@}"
+}
+
+run() {
+  PYTHONPATH=${PUP_PACKAGES_DIR} "${PYTHON_COMMAND}" "${@}"
+}
+
+help() {
+  echo "Install or run Python packages"
+}
+
+command=$1
+shift
+
+_setup
+
+if [[ "$command" == "install" ]]
+then
+  install ${@}
+elif [[ "$command" == "exec" ]]
+then
+  exec ${@}
+elif [[ "$command" == "run" ]]
+then
+  run ${@}
+else
+  help
+fi
